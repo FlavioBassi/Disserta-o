@@ -1,0 +1,37 @@
+"""
+Created on Sun Jul 25 00:01:01 2021
+
+@author: flavi
+"""
+
+import numpy as np
+import pandas as pd
+
+dataset = pd.read_excel('C:/Users/flavi/Desktop/Dissertação/cotacoes.xlsx',
+                       index_col=0, parse_dates = True)   
+
+dataset
+
+# Retornos logarizados
+
+retorno = np.log(dataset / dataset.shift(1))
+
+# Criando sinais ( 1 - long, -1 - short)
+
+position = np.sign(retorno.rolling(3).mean())
+
+
+strategy = position.shift(1)*retorno
+
+
+# Adicionando os custos de transação
+
+tc = 0.001 # 0.1%
+
+delta_pos = position.diff().abs()  # o dia que a estratégia muda de posição
+
+
+custo_transacao = tc*delta_pos # custo de transação * o dia da mudança
+
+my_rs2 = retorno_strategy - custo_transacao
+my_rs2.to_excel('momentum_3.xlsx')
